@@ -36,7 +36,7 @@ Transactions are broadcasted to every node when they occur. They are only valid 
 
 Each node listens for transactions, compiles them into blocks, and then broadcasts that block to be added to the blockchain. Adding new blocks to the blockchain is called mining.
 
-## Reaching Consensus
+### Reaching Consensus
 
 However, not just any block can be added to the blockchain. In order for there to be consensus amongst the peers, each block must contain a valid "proof-of-work" (PoW). This way each node can independently verify that broadcasted blocks are legitimate and safe to add to their chain. Since each node is working with the same criteria, this ensures that blockchains are synchronized. The blockchain with the most "work" put into it (i.e the longest chain) is considered the valid chain.
 
