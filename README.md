@@ -40,11 +40,66 @@ Each node listens for transactions, compiles them into blocks, and then broadcas
 
 However, not just any block can be added to the blockchain. In order for there to be consensus amongst the peers, each block must contain a valid "proof-of-work" (PoW). This way each node can independently verify that broadcasted blocks are legitimate and safe to add to their chain. Since each node is working with the same criteria, this ensures that blockchains are synchronized. The blockchain with the most "work" put into it (i.e the longest chain) is considered the valid chain.
 
-For the case of Bitcoin and Aurum, the proof-of-work is done through hashes. Each block will have a hash associated with its data. Aurum uses SHA256 to produce hashes that change wildly with any change of data. Each block's hash must have a specific number of leading 0s in order for it to be a valid proof-of-work. In the case of Aurum it is 3. The hash of the block is computed as follows;
+For the case of Bitcoin and Aurum, the proof-of-work is done through hashes. Each block will have a hash associated with its data. Aurum uses SHA256 to produce hashes that change wildly with any change of data. Each block's hash must have a specific number of leading 0s in order for it to be a valid proof-of-work. In the case of Aurum it is 3. The hash of the block is computed as follows:
 
-`PoW Hash = Hash(previousPoWHash + transactions + nonce)`
+```javascript
+export function calculateHash(
+  index,
+  previousHash,
+  timestamp,
+  transactions,
+  nonce
+) {
+  const data =
+    index + previousHash + timestamp + JSON.stringify(transactions) + nonce;
 
-The nonce value is a random integer that when added to the block, produces a hash which is valid (i.e. has 3 leading 0s). **There is no known way to figure out what the correct nonce is without trail and error**. The first miner to find the proof-of-work answer broadcasts their solution to the network. All nodes are notified that a new block was discovered. They double-check the solution and then begin working on the next block.
+  return crypto.createHash("sha256").update(data).digest("hex");
+}
+```
+
+The nonce value is a random integer that when added to the block, produces a hash which is valid (i.e. has 3 leading 0s). **There is no known way to figure out what the correct nonce is without trail and error**. The first miner to find the proof-of-work answer broadcasts their solution to the network. Here is a snippet for mining new blocks:
+
+```javascript
+export function generateNextBlock(previousBlock, transactions) {
+  const index = previousBlock.index + 1;
+  const previousHash = previousBlock.hash;
+  let nonce = 0;
+  let hash;
+  let timestamp;
+  // proof-of-work
+  do {
+    timestamp = new Date().getTime();
+    nonce = nonce + 1;
+    hash = calculateHash(index, previousHash, timestamp, transactions, nonce);
+  } while (!isValidHashDifficulty(hash));
+
+  return {
+    index: index,
+    previousHash: previousBlock.hash,
+    timestamp: timestamp,
+    transactions: transactions,
+    hash: hash,
+    nonce: nonce,
+  };
+}
+```
+
+All nodes are notified that a new block was discovered. They double-check the solution to ensure it is a valid block and then begin working on the next block. Here is a code snippet for validating new blocks:
+
+```javascript
+export function isValidNextBlock(nextBlock, previousBlock) {
+  if (previousBlock.index + 1 !== nextBlock.index) {
+    return false;
+  } else if (previousBlock.hash !== nextBlock.previousHash) {
+    return false;
+  } else if (!isValidHashDifficulty(nextBlock.previousHash)) {
+    return false;
+  } else if (!isValidHashDifficulty(nextBlock.hash)) {
+    return false;
+  }
+  return true;
+}
+```
 
 Mining is computational taxing, and therefore miners which successfully win the next block get to add a reward transaction to themselves onto the new block. Right now the current Bitcoin reward is 12.5 BTC.
 
@@ -53,3 +108,21 @@ Mining is computational taxing, and therefore miners which successfully win the 
 This protocol ensures that no one can sneak fraudulent transactions into previously mined blocks. As you can see from the hashing equation, each block's hash contains the previous block's hash as input. Linking a block with the proof-of-work hash of its predecessor results in tamper resistance. Since every block’s hash is an ingredient in the next block’s hash, any alterations in the chain will alter the final proof-of-work hash and all block hashes in between. The deeper the altered block, the more computational effort needed for tampering. The last hash of the chain represents the cumulative work of the entire chain, similar to a checksum. This makes it computational infeasible to alter a block already on the chain.
 
 This protocol also incentives miners to only focus on mining legitimate transactions. Peers only consider the longest chain (one with the most proof-of-work) as valid and authentic. A fraudulent chain is impractical over the long term because a miner has a low probability of consistently winning the block reward to maintain the chain. Over time, other miners will extend the valid chain faster than the tampered chain. Therefore adding fraudulent transactions is infeasible to do without collusion with over 50% of the computational power on the network.
+
+```javascript
+export function isValidChain(chain, genesisBlock) {
+  if (JSON.stringify(chain[0]) !== JSON.stringify(genesisBlock)) {
+    return false;
+  }
+
+  const tempBlocks = [genesisBlock];
+  for (let i = 1; i < chain.length; i = i + 1) {
+    if (isValidNextBlock(chain[i], tempBlocks[i - 1])) {
+      tempBlocks.push(chain[i]);
+    } else {
+      return false;
+    }
+  }
+  return true;
+}
+```
