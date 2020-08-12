@@ -16,7 +16,7 @@ const InputWrapper = styled("div")`
   border: 1px solid #d9d9d9;
   background-color: #fff;
   border-radius: 4px;
-  max-width: 200px;
+  max-width: 180px;
   padding: 1px;
   display: flex;
   color: rgba(0, 0, 0, 0.85);

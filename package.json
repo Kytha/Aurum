@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "homepage": "https://kytha.github.io/aurum",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --mode development --devtool inline-source-map --hot",
     "build": "cross-env NODE_ENV=production webpack --profile --json > compilation-stats.json",

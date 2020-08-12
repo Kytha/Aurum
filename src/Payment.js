@@ -41,11 +41,13 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(5),
     width: "100%",
     maxWidth: "300px",
+    [theme.breakpoints.down("sm")]: { maxWidth: "180px" },
   },
   textField: {
     marginBottom: theme.spacing(5),
     width: "100%",
     maxWidth: "300px",
+    [theme.breakpoints.down("sm")]: { maxWidth: "180px" },
   },
 }));
 
