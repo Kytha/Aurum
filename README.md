@@ -36,7 +36,7 @@ Transactions are broadcasted to every node when they occur. They are only valid 
 
 Each node listens for transactions, compiles them into blocks, and then broadcasts that block to be added to the blockchain. Adding new blocks to the blockchain is called mining.
 
-## Reaching consensus
+## Reaching Consensus
 
 However, not just any block can be added to the blockchain. In order for there to be consensus amongst the peers, each block must contain a valid "proof-of-work" (PoW). This way each node can independently verify that broadcasted blocks are legitimate and safe to add to their chain. Since each node is working with the same criteria, this ensures that blockchains are synchronized. The blockchain with the most "work" put into it (i.e the longest chain) is considered the valid chain.
 
@@ -50,6 +50,6 @@ Mining is computational taxing, and therefore miners which successfully win the 
 
 ### Security Considerations
 
-This protocol ensures that no one can sneak fraudulent transactions into previously mined blocks. As you can see from the hashing equation, each block's hash contains the previous block's hash as input. Linking a block with the “proof of work” hash of its predecessor results in tamper resistance. Since every block’s hash is an ingredient in the next block’s hash, any alterations in the chain will alter the final “proof of work” hash and all block hashes in between. The deeper the altered block, the more computational effort needed for tampering. The last hash of the chain represents the cumulative work of the entire chain, similar to a checksum. This makes it computational infeasible to alter a block already on the chain.
+This protocol ensures that no one can sneak fraudulent transactions into previously mined blocks. As you can see from the hashing equation, each block's hash contains the previous block's hash as input. Linking a block with the proof-of-work hash of its predecessor results in tamper resistance. Since every block’s hash is an ingredient in the next block’s hash, any alterations in the chain will alter the final proof-of-work hash and all block hashes in between. The deeper the altered block, the more computational effort needed for tampering. The last hash of the chain represents the cumulative work of the entire chain, similar to a checksum. This makes it computational infeasible to alter a block already on the chain.
 
-This protocol also incentives miners to only focus on mining legitimate transactions. Peers only considers the longest chain (one with the most “proof of work”) as valid and authentic. A fraudulent chain is impractical over the long term because a miner has a low probability of consistently winning the block reward to maintain the chain. Over time, other miners will extend the valid chain faster than the tampered chain. This is impossible to do without collusion with over 50% of the nodes on the network.
+This protocol also incentives miners to only focus on mining legitimate transactions. Peers only consider the longest chain (one with the most proof-of-work) as valid and authentic. A fraudulent chain is impractical over the long term because a miner has a low probability of consistently winning the block reward to maintain the chain. Over time, other miners will extend the valid chain faster than the tampered chain. Therefore adding fraudulent transactions is infeasible to do without collusion with over 50% of the computational power on the network.
