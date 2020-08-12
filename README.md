@@ -84,7 +84,9 @@ export function generateNextBlock(previousBlock, transactions) {
 }
 ```
 
-All nodes are notified that a new block was discovered. They double-check the solution to ensure it is a valid block and then begin working on the next block. Here is a code snippet for validating new blocks:
+It is important to note that mining is computational taxing, and therefore miners which successfully win the next block get to add a reward transaction to themselves onto the new block. Right now the current Bitcoin reward is 12.5 BTC.
+
+After a block has been mined, all nodes are notified that a new block was discovered. They double-check the solution to ensure it is a valid block and then begin working on the next block. Here is a code snippet for validating new blocks:
 
 ```javascript
 export function isValidNextBlock(nextBlock, previousBlock) {
@@ -101,13 +103,7 @@ export function isValidNextBlock(nextBlock, previousBlock) {
 }
 ```
 
-Mining is computational taxing, and therefore miners which successfully win the next block get to add a reward transaction to themselves onto the new block. Right now the current Bitcoin reward is 12.5 BTC.
-
-### Security Considerations
-
-This protocol ensures that no one can sneak fraudulent transactions into previously mined blocks. As you can see from the hashing equation, each block's hash contains the previous block's hash as input. Linking a block with the proof-of-work hash of its predecessor results in tamper resistance. Since every block’s hash is an ingredient in the next block’s hash, any alterations in the chain will alter the final proof-of-work hash and all block hashes in between. The deeper the altered block, the more computational effort needed for tampering. The last hash of the chain represents the cumulative work of the entire chain, similar to a checksum. This makes it computational infeasible to alter a block already on the chain.
-
-This protocol also incentives miners to only focus on mining legitimate transactions. Peers only consider the longest chain (one with the most proof-of-work) as valid and authentic. A fraudulent chain is impractical over the long term because a miner has a low probability of consistently winning the block reward to maintain the chain. Over time, other miners will extend the valid chain faster than the tampered chain. Therefore adding fraudulent transactions is infeasible to do without collusion with over 50% of the computational power on the network.
+With Aurum, sometimes nodes do not just request the latest block but the entire blockchain. This can happen when a node realizes they are out of sync with the blocks being broadcasted. Here is a snippet for verifying an entire chain of blocks received.
 
 ```javascript
 export function isValidChain(chain, genesisBlock) {
@@ -126,3 +122,9 @@ export function isValidChain(chain, genesisBlock) {
   return true;
 }
 ```
+
+### Security Considerations
+
+This protocol ensures that no one can sneak fraudulent transactions into previously mined blocks. As you can see from the hashing equation, each block's hash contains the previous block's hash as input. Linking a block with the proof-of-work hash of its predecessor results in tamper resistance. Since every block’s hash is an ingredient in the next block’s hash, any alterations in the chain will alter the final proof-of-work hash and all block hashes in between. The deeper the altered block, the more computational effort needed for tampering. The last hash of the chain represents the cumulative work of the entire chain, similar to a checksum. This makes it computational infeasible to alter a block already on the chain.
+
+This protocol also incentives miners to only focus on mining legitimate transactions. Peers only consider the longest chain (one with the most proof-of-work) as valid and authentic. A fraudulent chain is impractical over the long term because a miner has a low probability of consistently winning the block reward to maintain the chain. Over time, other miners will extend the valid chain faster than the tampered chain. Therefore adding fraudulent transactions is infeasible to do without collusion with over 50% of the computational power on the network.
